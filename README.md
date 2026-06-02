@@ -1,73 +1,88 @@
-# React + TypeScript + Vite
+#LiNK DEL VIDEO: 
+https://drive.google.com/drive/folders/1xywErmmLfCMpkTxa26J6N54uUy7zSkhz
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# FoodStore — store
 
-Currently, two official plugins are available:
+Frontend de e-commerce de comida que consume la API de FastAPI. Catálogo de productos, carrito persistente y pedidos.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- **Vite 8** + **React 19** + **TypeScript 6**
+- **React Router DOM v7** — rutas, params dinámicos, navegación
+- **TanStack Query v5** — fetching y caché del server state
+- **Zustand v5** — sesión del usuario y carrito con persistencia en localStorage
+- **Axios** — cliente HTTP con interceptor para JWT
+- **Tailwind CSS v4** 
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Instalación
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Copiar variables de entorno:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env
 ```
+
+Editar con la URL de la API:
+
+```
+VITE_API_URL=http://localhost:8000
+```
+
+## Scripts
+
+
+
+`npm run dev` | Levanta el servidor de desarrollo |
+`npm run build` | Build de producción |
+`npm run preview` | Preview del build |
+
+## Estructura
+
+```
+src/
+├── features/
+│   ├── auth/          registro, login
+│   ├── productos/     listado, detalle, búsqueda y filtros
+│   ├── cart/          carrito persistido + checkout
+│   ├── orders/        historial de pedidos
+│   ├── directions/    direcciones de entrega
+│   └── formas-pago/   métodos de pago
+├── shared/            Layout, Navbar, Footer, ProtectedRoute, NotFoundPage
+├── store/             useAuthStore y useCartStore (Zustand con persist)
+├── lib/               instancia de axios, queryClient, queryKeys
+└── router/            configuración de rutas
+```
+
+Cada feature sigue la misma estructura:
+
+```
+feature/
+├── types.ts          interfaces
+├── services/         llamadas a la API
+├── hooks/            hooks de TanStack Query
+├── components/       componentes del módulo
+└── page/             vistas
+```
+
+## Rutas
+
+
+| `/` | Listado de productos con búsqueda | No |
+| `/products/:id` | Detalle del producto | No |
+| `/cart` | Carrito y checkout | No |
+| `/orders` | Historial de pedidos | Sí (rol cliente) |
+| `/login` | Login | No |
+| `/register` | Registro | No |
+
+## Variables de entorno
+
+| `VITE_API_URL` | URL base de la API REST | `http://localhost:8000` |
+
+## Roles
+
+| `cliente` | Catálogo, carrito, checkout, historial de pedidos propios |
+| `admin` | Redirige al panel de administración en `localhost:5174` |
