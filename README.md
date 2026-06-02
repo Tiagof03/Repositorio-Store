@@ -1,6 +1,3 @@
-#LiNK DEL VIDEO: 
-https://drive.google.com/drive/folders/1xywErmmLfCMpkTxa26J6N54uUy7zSkhz
-
 # FoodStore — store
 
 Frontend de e-commerce de comida que consume la API de FastAPI. Catálogo de productos, carrito persistente y pedidos.
