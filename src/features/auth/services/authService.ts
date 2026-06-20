@@ -10,11 +10,9 @@ export function mapRoles(roles: string[]): Role {
 }
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
-  const formData = new URLSearchParams()
-  formData.append('username', credentials.email)
-  formData.append('password', credentials.password)
-  const { data: tokenData } = await api.post('/auth/token', formData, {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  const { data: tokenData } = await api.post('/auth/login', {
+    email: credentials.email,
+    password: credentials.password,
   })
   const { data: me } = await api.get<MeResponse>('/auth/me')
   return {
@@ -40,5 +38,14 @@ export const getMe = async (): Promise<MeResponse> => {
 }
 
 export const logout = async (): Promise<void> => {
-  try { await api.post('/auth/logout') } catch { /* ignore */ }
+  try { await api.post('/auth/logout') } catch { /* noop */ }
+}
+
+export const refreshToken = async (): Promise<string | null> => {
+  try {
+    const { data } = await api.post('/auth/refresh')
+    return data?.access_token ?? null
+  } catch {
+    return null
+  }
 }

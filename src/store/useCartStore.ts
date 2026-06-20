@@ -5,7 +5,7 @@ import type { CartItem } from '@/features/cart/types'
 
 interface CartStore {
   items: CartItem[]
-  addItem: (product: Product, quantity?: number) => void
+  addItem: (product: Product, quantity?: number, personalizacion?: number[]) => void
   increaseQuantity: (id: number) => void
   decreaseQuantity: (id: number) => void
   removeItem: (id: number) => void
@@ -19,7 +19,7 @@ export const useCartStore =
       (set, get) => ({
         items: [],
 
-        addItem: (product, quantity = 1) => {
+        addItem: (product, quantity = 1, personalizacion = []) => {
 
           const existingItem =
             get().items.find(
@@ -51,6 +51,7 @@ export const useCartStore =
               {
                 ...product,
                 quantity,
+                personalizacion,
               },
             ],
           })
@@ -137,6 +138,7 @@ export const useCartStore =
 
       {
         name: 'cart-storage',
+        partialize: (state) => ({ items: state.items }),
       }
     )
   )

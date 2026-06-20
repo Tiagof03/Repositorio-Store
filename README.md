@@ -1,85 +1,68 @@
-# FoodStore — store
+# Food Store - Frontend
 
-Frontend de e-commerce de comida que consume la API de FastAPI. Catálogo de productos, carrito persistente y pedidos.
+Frontend de e-commerce de comida que consume la API de FastAPI.
+Catalogo de productos, carrito persistente, checkout con Mercado Pago y
+seguimiento de pedidos en tiempo real via WebSocket.
 
-## Stack
+# Como instalarlo
 
-- **Vite 8** + **React 19** + **TypeScript 6**
-- **React Router DOM v7** — rutas, params dinámicos, navegación
-- **TanStack Query v5** — fetching y caché del server state
-- **Zustand v5** — sesión del usuario y carrito con persistencia en localStorage
-- **Axios** — cliente HTTP con interceptor para JWT
-- **Tailwind CSS v4** 
+## 1. Clonas el repo.
 
-## Instalación
+git clone https://github.com/Tiagof03/Repositorio-Store.git
 
-```bash
-npm install
-```
+## 2. Entras a la carpeta.
 
-Copiar variables de entorno:
+cd Repositorio-Store
 
-```bash
+## 3. Instalas las dependencias.
+
+pnpm install
+
+## 4. Copias las variables de entorno.
+
 cp .env.example .env
-```
 
-Editar con la URL de la API:
-
-```
-VITE_API_URL=http://localhost:8000
-```
-
-## Scripts
+## 5. Configuras las variables.
 
 
-
-`npm run dev` | Levanta el servidor de desarrollo |
-`npm run build` | Build de producción |
-`npm run preview` | Preview del build |
-
-## Estructura
-
-```
-src/
-├── features/
-│   ├── auth/          registro, login
-│   ├── productos/     listado, detalle, búsqueda y filtros
-│   ├── cart/          carrito persistido + checkout
-│   ├── orders/        historial de pedidos
-│   ├── directions/    direcciones de entrega
-│   └── formas-pago/   métodos de pago
-├── shared/            Layout, Navbar, Footer, ProtectedRoute, NotFoundPage
-├── store/             useAuthStore y useCartStore (Zustand con persist)
-├── lib/               instancia de axios, queryClient, queryKeys
-└── router/            configuración de rutas
-```
-
-Cada feature sigue la misma estructura:
-
-```
-feature/
-├── types.ts          interfaces
-├── services/         llamadas a la API
-├── hooks/            hooks de TanStack Query
-├── components/       componentes del módulo
-└── page/             vistas
-```
-
-## Rutas
+VITE_API_URL=http://localhost:8000/api/v1
+VITE_MP_PUBLIC_KEY=TEST-xxxx-xxxx-xxxx-xxxx
+VITE_ADMIN_URL=http://localhost:5173
 
 
-| `/` | Listado de productos con búsqueda | No |
-| `/products/:id` | Detalle del producto | No |
-| `/cart` | Carrito y checkout | No |
-| `/orders` | Historial de pedidos | Sí (rol cliente) |
-| `/login` | Login | No |
-| `/register` | Registro | No |
+## 6. Levantas el proyecto.
+#### Previamente habiendo levantado la pagina del administrador
 
-## Variables de entorno
+pnpm run dev
 
-| `VITE_API_URL` | URL base de la API REST | `http://localhost:8000` |
+## 7. Abris el navegador.
 
-## Roles
+http://localhost:5174
 
-| `cliente` | Catálogo, carrito, checkout, historial de pedidos propios |
-| `admin` | Redirige al panel de administración en `localhost:5174` |
+# Seed del backend
+
+## El backend tiene que estar corriendo en http://localhost:8000.
+
+# WebSocket
+
+El estado de los pedidos se actualiza en tiempo real mediante WebSocket.
+Cuando la conexion esta activa, un badge verde "En vivo" aparece en la
+esquina inferior derecha de la pantalla.
+
+# Nuestro Stack
+
+**React 19**
+
+**TypeScript 6**
+
+**Vite 8**
+
+**TanStack Query 5**
+
+**Zustand 5**
+
+**Tailwind CSS 4**
+
+**Axios**
+
+**Mercado Pago SDK**

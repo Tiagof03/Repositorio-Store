@@ -3,6 +3,8 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from '@/router/router'
 import { useAuthStore } from '@/store/useAuthStore'
 import { getMe, mapRoles } from '@/features/auth/services/authService'
+import ToastProvider from '@/shared/ToastProvider'
+import ConnectionIndicator from '@/shared/ConnectionIndicator'
 
 function App() {
   const token = useAuthStore((state) => state.token)
@@ -25,7 +27,13 @@ function App() {
     loadUser()
   }, [token, user, loginStore])
 
-  return <RouterProvider router={router} />
+  return (
+    <>
+      <RouterProvider router={router} />
+      <ToastProvider />
+      <ConnectionIndicator />
+    </>
+  )
 }
 
 export default App

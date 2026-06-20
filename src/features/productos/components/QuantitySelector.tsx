@@ -14,18 +14,18 @@ export default function QuantitySelector({ value, onChange }: Props) {
     <div className='flex items-center border border-outline-variant/30 bg-surface-container-high'>
       <button
         onClick={decrement}
-        className='px-4 py-3 text-body-md text-primary transition hover:bg-surface-container-highest cursor-pointer'
+        className='px-4 py-3 text-xl text-primary transition hover:bg-surface-variant cursor-pointer'
       >
         -
       </button>
 
-      <span className='px-6 text-body-md font-bold text-on-surface'>
+      <span className='px-6 font-bold text-on-surface'>
         {value}
       </span>
 
       <button
         onClick={increment}
-        className='px-4 py-3 text-body-md text-primary transition hover:bg-surface-container-highest cursor-pointer'
+        className='px-4 py-3 text-xl text-primary transition hover:bg-surface-variant cursor-pointer'
       >
         +
       </button>

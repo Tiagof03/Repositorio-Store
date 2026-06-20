@@ -1,12 +1,21 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useLogin } from '@/features/auth/hooks/useLogin'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { useLogin } from '@/features/auth/hooks/useAuth'
 import { useAuthStore } from '@/store/useAuthStore'
+import { extractApiError } from '@/lib/errorParser'
+
+const ADMIN_URL = import.meta.env.VITE_ADMIN_URL as string | undefined || 'http://localhost:5174'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const user = useAuthStore((s) => s.user)
   const rol = useAuthStore((s) => s.rol)
+
+  const from =
+    (location.state as { from?: { pathname: string } })?.from?.pathname ||
+    new URLSearchParams(location.search).get('returnTo') ||
+    '/'
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -18,11 +27,11 @@ export default function LoginPage() {
   useEffect(() => {
     if (!user) return
     if (rol === 'admin') {
-      window.location.href = 'http://localhost:5174/'
+      window.location.href = ADMIN_URL
     } else {
-      navigate('/', { replace: true })
+      navigate(from, { replace: true })
     }
-  }, [user, rol, navigate])
+  }, [user, rol, navigate, from])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,27 +41,13 @@ export default function LoginPage() {
       {
         onSuccess: (data) => {
           if (data.rol === 'admin') {
-            window.location.href = 'http://localhost:5174/'
+            window.location.href = ADMIN_URL
           } else {
-            navigate('/', { replace: true })
+            navigate(from, { replace: true })
           }
         },
         onError: (err: unknown) => {
-          if (
-            typeof err === 'object' &&
-            err !== null &&
-            'response' in err &&
-            typeof (err as Record<string, unknown>).response === 'object'
-          ) {
-            const response = (err as { response: { status: number } }).response
-            if (response.status === 401) {
-              setError('Email o contrasena incorrectos')
-            } else {
-              setError('Error del servidor. Intenta de nuevo.')
-            }
-          } else {
-            setError('No se pudo conectar con el servidor')
-          }
+          setError(extractApiError(err, 'No se pudo conectar con el servidor'))
         },
       }
     )
@@ -62,13 +57,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background flex items-center justify-center px-margin-mobile">
       <div className="w-full max-w-sm flex flex-col gap-stack-lg">
         <div className="flex flex-col items-center gap-stack-sm">
-          <div className="w-14 h-14 bg-primary-container flex items-center justify-center mb-2">
-            <span className="material-symbols-outlined text-on-primary-container text-[32px]">
-              restaurant
-            </span>
-          </div>
           <h1 className="text-headline-lg font-bold text-primary uppercase tracking-tighter">
-            FoodStore
+            Food Store
           </h1>
           <p className="text-label-md text-on-surface-variant/70">
             Ingresa a tu cuenta para continuar
@@ -87,7 +77,7 @@ export default function LoginPage() {
             <div className="flex flex-col gap-stack-sm">
               <label htmlFor="email" className="text-label-md text-on-surface-variant">Email</label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px] pointer-events-none">mail</span>
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px] pointer-events-none" style={{ fontVariationSettings: "'FILL' 1" }}>mail</span>
                 <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" className="w-full bg-surface-container-high border border-outline-variant/30 text-on-surface text-body-md pl-11 pr-4 py-3 focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-on-surface-variant/40" />
               </div>
             </div>
@@ -95,10 +85,10 @@ export default function LoginPage() {
             <div className="flex flex-col gap-stack-sm">
               <label htmlFor="password" className="text-label-md text-on-surface-variant">Contraseña</label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px] pointer-events-none">lock</span>
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px] pointer-events-none" style={{ fontVariationSettings: "'FILL' 1" }}>lock</span>
                 <input id="password" type={showPassword ? 'text' : 'password'} required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="xxxxxxxx" className="w-full bg-surface-container-high border border-outline-variant/30 text-on-surface text-body-md pl-11 pr-12 py-3 focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-on-surface-variant/40" />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 hover:text-on-surface-variant cursor-pointer">
-                  <span className="material-symbols-outlined text-[20px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>{showPassword ? 'visibility_off' : 'visibility'}</span>
                 </button>
               </div>
             </div>

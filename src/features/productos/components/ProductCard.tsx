@@ -1,9 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Product } from '../types'
 import { useCartStore } from '../../../store/useCartStore'
-import { useState } from 'react'
-
-import Toast from '../../../shared/Toast'
+import { useToastStore } from '../../../store/useToastStore'
 
 interface ProductCardProps {
   product: Product
@@ -17,22 +15,15 @@ export default function ProductCard({
     (state) => state.addItem
   )
 
-  const [showToast, setShowToast] =
-    useState(false)
+  const addToast = useToastStore((s) => s.addToast)
 
   const handleAddToCart = () => {
-
     addItem(product)
-
-    setShowToast(true)
-
-    setTimeout(() => {
-      setShowToast(false)
-    }, 2000)
+    addToast('Producto agregado al carrito', 'success')
   }
 
   return (
-    <article className='group border border-outline-variant/30 bg-surface-container-low transition duration-300 hover:border-primary/50 hover:shadow-[0px_4px_20px_rgba(0,0,0,0.04)]'>
+    <article className='group overflow-hidden border border-outline-variant/20 bg-surface-container transition duration-300 hover:border-primary/50'>
 
       <div className='overflow-hidden'>
 
@@ -48,7 +39,7 @@ export default function ProductCard({
 
         <div className='flex items-center justify-between'>
 
-          <span className='text-label-sm text-on-surface-variant/60 uppercase tracking-wider'>
+          <span className='text-xs uppercase tracking-[0.3em] text-outline'>
 
             {product.disponible
               ? 'Disponible'
@@ -56,7 +47,7 @@ export default function ProductCard({
 
           </span>
 
-          <span className='text-headline-md font-bold text-primary'>
+          <span className='text-lg font-bold text-primary'>
 
             ${product.precio_base}
 
@@ -66,13 +57,13 @@ export default function ProductCard({
 
         <div>
 
-          <h3 className='mb-2 text-body-lg font-bold text-on-surface transition group-hover:text-primary'>
+          <h3 className='mb-2 text-2xl font-bold text-on-surface transition group-hover:text-primary'>
 
             {product.nombre}
 
           </h3>
 
-          <p className='text-body-md text-on-surface-variant/70'>
+          <p className='text-sm leading-7 text-on-surface-variant/70'>
 
             {product.descripcion}
 
@@ -84,7 +75,7 @@ export default function ProductCard({
 
           <button
             onClick={handleAddToCart}
-            className='w-full bg-primary-container text-on-primary-container text-label-md font-bold uppercase tracking-wider py-3 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer'
+            className='w-full border border-primary py-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary transition hover:bg-primary hover:text-on-primary cursor-pointer'
           >
 
             Agregar al carrito
@@ -93,7 +84,7 @@ export default function ProductCard({
 
           <Link
             to={`/products/${product.id}`}
-            className='block w-full border border-outline-variant/30 text-on-surface-variant text-label-md text-center py-3 hover:bg-surface-container-high transition-colors'
+            className='block w-full border border-outline-variant/30 py-3 text-center text-sm font-semibold uppercase tracking-[0.2em] text-on-surface-variant transition hover:border-primary hover:text-on-surface'
           >
 
             Ver detalle
@@ -103,10 +94,6 @@ export default function ProductCard({
         </div>
 
       </div>
-
-      {showToast && (
-        <Toast message='Producto agregado al carrito' />
-      )}
 
     </article>
   )

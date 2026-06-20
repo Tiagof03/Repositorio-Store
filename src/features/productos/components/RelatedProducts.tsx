@@ -21,13 +21,13 @@ export default function RelatedProducts({
 
         <div>
 
-          <span className='text-label-sm text-primary uppercase tracking-wider'>
+          <span className='text-sm uppercase tracking-[0.3em] text-primary'>
 
             Recomendados
 
           </span>
 
-          <h2 className='mt-2 text-headline-lg font-bold text-on-surface'>
+          <h2 className='mt-2 text-4xl font-black uppercase tracking-tight text-on-surface'>
 
             Productos Relacionados
 
