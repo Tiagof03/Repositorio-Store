@@ -4,7 +4,7 @@ import Layout from '@/shared/Layout'
 import { useCartStore } from '@/store/useCartStore'
 import { useCreateOrder } from '@/features/orders/hooks/useOrders'
 import { useAuthStore } from '@/store/useAuthStore'
-import { useDirections, useCreateDirection, useUpdateDirection } from '@/features/directions/hooks/useDirections'
+import { useDirections, useCreateDirection, useUpdateDirection, useDeleteDirection } from '@/features/directions/hooks/useDirections'
 import { useFormasPago } from '@/features/formas-pago/hooks/useFormasPago'
 import CartItemCard from '@/features/cart/components/CartItemCard'
 import CartSkeleton from '@/features/cart/components/CartSkeleton'
@@ -39,11 +39,12 @@ export default function CartPage() {
     if (directions && directions.length > 0 && selectedDirection === 0) {
       setSelectedDirection(directions[0].id)
     }
-  }, [directions, selectedDirection])
+  }, [directions])
 
   const mutation = useCreateOrder()
   const createDirectionMutation = useCreateDirection()
   const updateDirectionMutation = useUpdateDirection()
+  const deleteDirectionMutation = useDeleteDirection()
   const addToast = useToastStore((s) => s.addToast)
   const startPayment = usePaymentStore((s) => s.startPayment)
 
@@ -211,6 +212,15 @@ export default function CartPage() {
                       isSaving={createDirectionMutation.isPending}
                       onUpdate={(id, data) => updateDirectionMutation.mutate({ id, data })}
                       isUpdating={updateDirectionMutation.isPending}
+                      onDelete={(id) => {
+                        const remaining = directions?.filter((d) => d.id !== id) ?? []
+                        deleteDirectionMutation.mutate(id, {
+                          onSuccess: () => {
+                            setSelectedDirection(remaining.length > 0 ? remaining[0].id : 0)
+                          },
+                        })
+                      }}
+                      isDeleting={deleteDirectionMutation.isPending}
                     />
 
                     {createDirectionMutation.error && (

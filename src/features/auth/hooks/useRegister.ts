@@ -1,11 +1,9 @@
-import {
-  useMutation,
-} from '@tanstack/react-query'
-
+import { useMutation } from '@tanstack/react-query'
 import { register } from '@/features/auth/services/authService'
 import { useAuthStore } from '@/store/useAuthStore'
 
 export const useRegister = () => {
+  
   const loginStore = useAuthStore((s) => s.login)
 
   return useMutation({

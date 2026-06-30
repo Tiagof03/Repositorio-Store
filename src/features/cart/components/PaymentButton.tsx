@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import api from '@/lib/axios'
 import { extractApiError } from '@/lib/errorParser'
 import { isMpConfigured } from '@/lib/mp'
+import { useCreatePayment } from '@/features/cart/hooks/useCreatePayment'
 
 interface PaymentButtonProps {
   pedidoId: number
@@ -9,9 +9,8 @@ interface PaymentButtonProps {
 }
 
 export default function PaymentButton({ pedidoId, monto }: PaymentButtonProps) {
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
+  const paymentMutation = useCreatePayment()
   const mpConfigured = isMpConfigured()
 
   const handlePagar = async () => {
@@ -20,18 +19,15 @@ export default function PaymentButton({ pedidoId, monto }: PaymentButtonProps) {
       return
     }
 
-    setLoading(true)
     setError(null)
 
     try {
-      const res = await api.post('/pagos/crear', {
-        pedido_id: pedidoId,
-      })
+      const data = await paymentMutation.mutateAsync(pedidoId)
 
-      const { init_point } = res.data
+      const initPoint = data?.init_point
 
-      if (init_point) {
-        window.location.href = init_point
+      if (initPoint) {
+        window.location.href = initPoint
       } else {
         setError('Error al obtener el punto de pago')
       }
@@ -44,8 +40,6 @@ export default function PaymentButton({ pedidoId, monto }: PaymentButtonProps) {
       } else {
         setError('Error al conectar con el medio de pago.')
       }
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -59,10 +53,10 @@ export default function PaymentButton({ pedidoId, monto }: PaymentButtonProps) {
 
       <button
         onClick={handlePagar}
-        disabled={loading}
+        disabled={paymentMutation.isPending}
         className='w-full border border-primary bg-primary py-4 text-sm font-bold uppercase tracking-[0.2em] text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer'
       >
-        {loading ? (
+        {paymentMutation.isPending ? (
           <span className='flex items-center justify-center gap-2'>
             <svg className='h-4 w-4 animate-spin' viewBox='0 0 24 24'>
               <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' fill='none' />

@@ -16,7 +16,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
   })
   const { data: me } = await api.get<MeResponse>('/auth/me')
   return {
-    user: { id: me.id, nombre: me.nombre, email: me.email },
+    user: { id: me.id, nombre: me.nombre, apellido: me.apellido, email: me.email, celular: me.celular },
     token: tokenData.access_token,
     rol: mapRoles(me.roles),
   }
@@ -26,7 +26,7 @@ export const register = async (data: RegisterRequest): Promise<LoginResponse> =>
   const { data: tokenData } = await api.post('/auth/register', data)
   const { data: me } = await api.get<MeResponse>('/auth/me')
   return {
-    user: { id: me.id, nombre: me.nombre, email: me.email },
+    user: { id: me.id, nombre: me.nombre, apellido: me.apellido, email: me.email, celular: me.celular },
     token: tokenData.access_token,
     rol: mapRoles(me.roles),
   }
@@ -35,17 +35,4 @@ export const register = async (data: RegisterRequest): Promise<LoginResponse> =>
 export const getMe = async (): Promise<MeResponse> => {
   const { data } = await api.get<MeResponse>('/auth/me')
   return data
-}
-
-export const logout = async (): Promise<void> => {
-  try { await api.post('/auth/logout') } catch { /* noop */ }
-}
-
-export const refreshToken = async (): Promise<string | null> => {
-  try {
-    const { data } = await api.post('/auth/refresh')
-    return data?.access_token ?? null
-  } catch {
-    return null
-  }
 }

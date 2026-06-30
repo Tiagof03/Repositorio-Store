@@ -9,6 +9,8 @@ interface DirectionFormProps {
   isSaving: boolean
   onUpdate: (id: number, data: DirectionFormData) => void
   isUpdating: boolean
+  onDelete: (id: number) => void
+  isDeleting : boolean
 }
 
 export interface DirectionFormData {
@@ -20,9 +22,10 @@ export interface DirectionFormData {
   codigo_postal: string
 }
 
-export default function DirectionForm({ directions, selectedDirection, onDirectionChange, onSave, isSaving, onUpdate, isUpdating }: DirectionFormProps) {
+export default function DirectionForm({ directions, selectedDirection, onDirectionChange, onSave, isSaving, onUpdate, isUpdating, onDelete, isDeleting }: DirectionFormProps) {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
   const [linea1, setLinea1] = useState('')
   const [linea2, setLinea2] = useState('')
   const [ciudad, setCiudad] = useState('')
@@ -66,8 +69,8 @@ export default function DirectionForm({ directions, selectedDirection, onDirecti
       <div className='space-y-3'>
         <label className='block text-sm font-bold uppercase tracking-[0.2em] text-primary'>Dirección</label>
         <div className='flex gap-2'>
-          <select value={selectedDirection} onChange={(e) => onDirectionChange(Number(e.target.value))}
-            className='flex-1 border border-outline-variant/30 bg-surface-container-high px-4 py-4 text-on-surface outline-none'>
+          <select value={selectedDirection} onChange={(e) => { onDirectionChange(Number(e.target.value)); setConfirmDelete(false) }}
+            className='min-w-0 flex-1 truncate border border-outline-variant/30 bg-surface-container-high px-4 py-4 text-on-surface outline-none'>
             {directions?.map((direction) => (
               <option key={direction.id} value={direction.id}>
                 {direction.linea1}
@@ -75,12 +78,44 @@ export default function DirectionForm({ directions, selectedDirection, onDirecti
             ))}
           </select>
           {directions && directions.length > 0 && selectedDirection > 0 && (
-            <button type='button' onClick={handleEdit}
-              className='border border-outline-variant/30 px-4 text-xs font-bold uppercase tracking-[0.2em] text-on-surface-variant transition hover:border-primary hover:text-primary cursor-pointer'>
-              Editar
-            </button>
+            <>
+              <button type='button' onClick={handleEdit}
+                className='border border-outline-variant/30 px-4 text-xs font-bold uppercase tracking-[0.2em] text-on-surface-variant transition hover:border-primary  hover:text-primary cursor-pointer'>
+                Editar
+              </button>
+              <button type='button' onClick={() => setConfirmDelete(true)}
+                className='border border-red-500/40 px-4 text-xs font-bold uppercase tracking-[0.2em] text-red-400 transition hover:border-red-500 hover:text-red-300 cursor-pointer whitespace-nowrap'>
+                Eliminar
+              </button>
+            </>
           )}
         </div>
+        {confirmDelete && (
+            <div className='flex items-center justify-between border border-red-500/30 bg-red-500/10 px-4 py-3'>
+              <span className='text-sm text-red-400'>¿Eliminar esta dirección?</span>
+              <div className='flex gap-2'>
+                <button type='button' disabled={isDeleting} onClick={() => { onDelete(selectedDirection); setConfirmDelete(false) }}
+                  className='border border-red-500 bg-red-500/20 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-red-400 transition hover:bg-red-500 hover:text-white cursor-pointer disabled:opacity-50 whitespace-nowrap'>
+                  {isDeleting ? 'Eliminando...' : 'Sí, eliminar'}
+                </button>
+                <button type='button' onClick={() => setConfirmDelete(false)}
+                  className='border border-outline-variant/30 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-on-surface-variant transition hover:border-primary hover:text-primary cursor-pointer whitespace-nowrap'>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          )}
+          {selectedDirection > 0 && !showForm && (() => {
+            const dir = directions?.find((d) => d.id === selectedDirection)
+            if (!dir) return null
+            return (
+              <div className='border border-outline-variant/20 bg-surface-container-high p-3 text-sm'>
+                <p className='font-bold text-on-surface'>{dir.linea1}</p>
+                {dir.linea2 && <p className='text-on-surface-variant'>{dir.linea2}</p>}
+                <p className='text-on-surface-variant'>{dir.ciudad}, {dir.provincia}{dir.codigo_postal ? ` - CP ${dir.codigo_postal}` : ''}</p>
+              </div>
+            )
+          })()}
       </div>
 
       {!showForm ? (

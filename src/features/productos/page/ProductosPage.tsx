@@ -116,15 +116,11 @@ export default function ProductosPage() {
       <main className='mx-auto max-w-7xl px-6 py-14'>
         <section className='mb-20 text-center'>
           <div className='mx-auto max-w-3xl'>
-            <span className='mb-4 block text-sm uppercase tracking-[0.3em] text-primary'>
-              Store Online
-            </span>
+            
             <h1 className='mb-6 text-5xl font-black uppercase leading-none tracking-tight text-on-surface md:text-7xl'>
-              Nuestro <span className='text-primary'>Menú</span>
+              <span className='text-primary'>Menú</span>
             </h1>
-            <p className='mx-auto max-w-2xl text-base leading-8 text-on-surface-variant/70 md:text-lg'>
-              Descubrí nuestros productos y realizá tu pedido online.
-            </p>
+            
           </div>
         </section>
 

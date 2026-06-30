@@ -3,13 +3,6 @@ export interface LoginRequest {
   password: string
 }
 
-export interface TokenResponse {
-  access_token: string
-  refresh_token: string
-  token_type: string
-  expires_in: number
-}
-
 export interface MeResponse {
   id: number
   email: string
@@ -33,7 +26,9 @@ export interface LoginResponse {
   user: {
     id: number
     nombre: string
+    apellido: string
     email: string
+    celular: string | null
   }
   token: string
   rol: Role

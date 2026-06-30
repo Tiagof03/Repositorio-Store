@@ -19,7 +19,7 @@ function App() {
       try {
         const data = await getMe()
         const rol = mapRoles(data.roles)
-        loginStore({ id: data.id, nombre: data.nombre, email: data.email }, token, rol)
+        loginStore({ id: data.id, nombre: data.nombre, apellido: data.apellido, email: data.email, celular: data.celular }, token, rol)
       } catch {
         console.log('No se pudo cargar usuario')
       }

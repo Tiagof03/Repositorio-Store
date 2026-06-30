@@ -3,13 +3,15 @@ import { persist } from 'zustand/middleware'
 
 export type Role = 'admin' | 'empleado' | 'cajero' | 'cliente'
 
-export interface User {
+interface User {
   id: number
   nombre: string
+  apellido: string
   email: string
+  celular: string | null
 }
 
-export interface AuthState {
+interface AuthState {
   user: User | null
   token: string | null
   rol: Role | null

@@ -49,10 +49,11 @@ class WebSocketService {
       } catch { /* noop */
       }
     }
+    if (!token) return
     const params = new URLSearchParams()
-    if (token) params.set('token', token)
+    params.set('token', token)
     if (pedidoId) params.set('pedido_id', String(pedidoId))
-    const url = `${wsBaseUrl()}/api/v1/pedidos/ws${params.toString() ? `?${params.toString()}` : ''}`
+    const url = `${wsBaseUrl()}/api/v1/pedidos/ws?${params.toString()}`
     const ws = new WebSocket(url)
     this.ws = ws
 

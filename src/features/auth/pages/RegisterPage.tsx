@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useRegister } from '@/features/auth/hooks/useAuth'
-import { useAuthStore } from '@/store/useAuthStore'
 import { extractApiError } from '@/lib/errorParser'
 
 const ADMIN_URL = import.meta.env.VITE_ADMIN_URL as string | undefined || 'http://localhost:5174'
@@ -9,8 +8,6 @@ const ADMIN_URL = import.meta.env.VITE_ADMIN_URL as string | undefined || 'http:
 export default function RegisterPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const user = useAuthStore((s) => s.user)
-  const rol = useAuthStore((s) => s.rol)
 
   const from =
     (location.state as { from?: { pathname: string } })?.from?.pathname ||
@@ -27,15 +24,6 @@ export default function RegisterPage() {
 
   const registerMutation = useRegister()
 
-  useEffect(() => {
-    if (!user) return
-    if (rol === 'admin') {
-      window.location.href = ADMIN_URL
-    } else {
-      navigate(from, { replace: true })
-    }
-  }, [user, rol, navigate, from])
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -44,7 +32,7 @@ export default function RegisterPage() {
       {
         onSuccess: (data) => {
           if (data.rol === 'admin') {
-            window.location.href = ADMIN_URL
+            window.location.replace(ADMIN_URL)
           } else {
             navigate(from, { replace: true })
           }

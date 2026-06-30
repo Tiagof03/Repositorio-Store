@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import api from '@/lib/axios'
 import Layout from '@/shared/Layout'
 import PaymentButton from '@/features/cart/components/PaymentButton'
 import { usePaymentStore } from '@/store/usePaymentStore'
+import { useConfirmPayment } from '@/features/cart/hooks/useConfirmPayment'
+import { useOrder } from '@/features/orders/hooks/useOrders'
 
 type ResultStatus = 'confirmando' | 'aprobado' | 'rechazado' | 'error'
 
@@ -12,11 +13,14 @@ export default function PaymentResultPage() {
   const [searchParams] = useSearchParams()
   const [estado, setEstado] = useState<ResultStatus>('confirmando')
   const [orderTotal, setOrderTotal] = useState<number | null>(null)
+  const hasConfirmed = useRef(false)
   const resetPayment = usePaymentStore((s) => s.resetPayment)
   const approvePayment = usePaymentStore((s) => s.approvePayment)
   const rejectPayment = usePaymentStore((s) => s.rejectPayment)
+  const confirmPayment = useConfirmPayment()
 
   const pedidoId = Number(id)
+  const { data: orderData } = useOrder(pedidoId)
   const paymentId = searchParams.get('payment_id')
   const isFailure = routeStatus === 'failure'
 
@@ -24,9 +28,6 @@ export default function PaymentResultPage() {
     if (isFailure) {
       setEstado('rechazado')
       rejectPayment('Pago rechazado por el usuario')
-      api.get(`/pedidos/${pedidoId}`)
-        .then((res) => setOrderTotal(res.data.total))
-        .catch(() => {})
       return
     }
 
@@ -36,13 +37,16 @@ export default function PaymentResultPage() {
       return
     }
 
+    if (hasConfirmed.current) return
+    hasConfirmed.current = true
+
     async function confirmar() {
       try {
-        const res = await api.post('/pagos/confirm', {
-          pedido_id: pedidoId,
-          payment_id: Number(paymentId),
+        const data = await confirmPayment.mutateAsync({
+          pedidoId,
+          paymentId: Number(paymentId),
         })
-        const esAprobado = res.data.estado === 'aprobado'
+        const esAprobado = data.estado === 'aprobado'
         setEstado(esAprobado ? 'aprobado' : 'rechazado')
         if (esAprobado) {
           approvePayment(paymentId!)
@@ -56,7 +60,13 @@ export default function PaymentResultPage() {
     }
 
     confirmar()
-  }, [pedidoId, paymentId, isFailure, approvePayment, rejectPayment])
+  }, [pedidoId, paymentId, isFailure])
+
+  useEffect(() => {
+    if (orderData?.total) {
+      setOrderTotal(orderData.total)
+    }
+  }, [orderData])
 
   if (estado === 'confirmando') {
     return (

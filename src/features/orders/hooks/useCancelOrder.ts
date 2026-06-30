@@ -1,18 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createOrder } from '@/features/orders/services/orderService'
+import { cancelOrder } from '@/features/orders/services/orderService'
 import { queryKeys } from '@/lib/queryKeys'
 
-export const useCreateOrder = () => {
+export const useCancelOrder = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: createOrder,
+    mutationFn: (id: number) => cancelOrder(id),
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders })
     },
   })
-}
-
-export type CreateOrderError = {
-  response?: { data?: { detail?: string } }
 }

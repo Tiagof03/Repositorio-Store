@@ -6,7 +6,6 @@ import { queryKeys } from '@/lib/queryKeys'
 
 export function useOrderStatusWS(pedidoId?: number) {
   const queryClient = useQueryClient()
-  const disconnect = useWsStore((s) => s.disconnect)
 
   useEffect(() => {
     wsService.onOpenCallback = () => {
@@ -26,7 +25,6 @@ export function useOrderStatusWS(pedidoId?: number) {
 
     return () => {
       unsubscribe()
-      disconnect()
     }
-  }, [disconnect, queryClient, pedidoId])
+  }, [queryClient, pedidoId])
 }
